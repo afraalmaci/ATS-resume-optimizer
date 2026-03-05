@@ -1,5 +1,6 @@
-Project Vision
-Tech Stack
-Architecture Overview
-Roadmap
-Getting Started
+AI Resume Optimizer flow:
+- Step 1 -> Upload Resume
+
+- Step 2 -> Paste Job Description
+
+- Step 3 -> Analyze Resume
