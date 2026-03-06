@@ -2,13 +2,11 @@
 
 import { useState } from "react";
 import { useMultiStepForm } from "@/hooks/useMultiStepForm";
-import { toast, Toaster } from "react-hot-toast";
+import { MultiStepFormProps } from "@/types/form.types";
+import { toast } from "react-hot-toast";
+import styles from "@/styles/MultiStepForm.module.css";
 
-type Props = {
-  steps: React.ReactNode[];
-  onFinish?: () => void;
-};
-export default function MultiStepForm({ steps, onFinish }: Props) {
+export default function MultiStepForm({ steps }: MultiStepFormProps) {
   const { step, next, back, currentStepIndex } = useMultiStepForm(steps);
   const [loading, setLoading] = useState(false);
 
@@ -18,10 +16,9 @@ export default function MultiStepForm({ steps, onFinish }: Props) {
   const handleFinish = async () => {
     try {
       setLoading(true);
-      await new Promise((res) => setTimeout(res, 500)); // Simülasyon
-      toast.success("Form successfully submitted!"); // Toast burada
+      await new Promise((res) => setTimeout(res, 500));
+      toast.success("Form successfully submitted!");
       console.log("Form workflow finished!");
-      if (onFinish) onFinish();
     } catch (err) {
       toast.error("Something went wrong!");
     } finally {
@@ -30,12 +27,12 @@ export default function MultiStepForm({ steps, onFinish }: Props) {
   };
 
   return (
-    <div>
-      <div style={{ marginBottom: 20 }}>{step}</div>
+    <div className={styles.container}>
+      <div>{step}</div>
 
-      <div style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
+      <div className={styles.footer}>
         {!isFirstStep ? (
-          <button onClick={back} disabled={loading} style={{ marginRight: "auto" }}>
+          <button onClick={back} disabled={loading} className={styles.buttonBack}>
             Back
           </button>
         ) : (
@@ -43,16 +40,15 @@ export default function MultiStepForm({ steps, onFinish }: Props) {
         )}
 
         {!isLastStep ? (
-          <button onClick={next} disabled={loading} style={{ marginLeft: "auto" }}>
+          <button onClick={next} disabled={loading} className={styles.buttonAuto}>
             Next
           </button>
         ) : (
-          <button onClick={handleFinish} disabled={loading} style={{ marginLeft: "auto" }}>
+          <button onClick={handleFinish} disabled={loading} className={styles.buttonAuto}>
             Finish
           </button>
         )}
       </div>
-
     </div>
   );
 }

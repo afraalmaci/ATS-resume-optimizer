@@ -1,7 +1,8 @@
 "use client";
 
 import { useJobDescriptionForm } from "@/hooks/useJobDescriptionForm";
-import { Toaster, toast } from "react-hot-toast";
+import { toast } from "react-hot-toast";
+import styles from "@/styles/JobDescriptionForm.module.css";
 
 export default function JobDescriptionForm() {
   const { value, error, handleChange, maxChars } = useJobDescriptionForm();
@@ -11,18 +12,18 @@ export default function JobDescriptionForm() {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+    <div className={styles.container}>
       <textarea
         value={value}
         onChange={handleChange}
         onBlur={handleBlur}
         placeholder="Enter job description here..."
         rows={6}
-        style={{ padding: 10, borderRadius: 8, border: "1px solid gray", resize: "vertical" }}
+        className={styles.textarea}
       />
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <div className={styles.footer}>
         <span>{value.length} / {maxChars}</span>
-        {error && <span style={{ color: "red" }}>{error}</span>}
+        {error && <span className={styles.error}>{error}</span>}
       </div>
     </div>
   );

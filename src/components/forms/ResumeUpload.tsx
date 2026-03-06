@@ -1,12 +1,24 @@
 "use client";
-
+import React from "react";
 import { useResumeUpload } from "@/hooks/useResumeUpload";
+import { ResumeUploadProps } from "@/types/form.types";
 import styles from "@/styles/ResumeUpload.module.css";
-import { Toaster } from "react-hot-toast";
 
-export default function ResumeUpload() {
+export default function ResumeUpload({ onUpload }: ResumeUploadProps) {
   const { file, loading, removeFile, getRootProps, getInputProps, isDragActive } =
     useResumeUpload();
+
+  React.useEffect(() => {
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = reader.result as string;
+      if (onUpload) onUpload(text);
+    };
+
+    reader.readAsText(file); // TODO : pdf parsing -> add  pdf lib 
+  }, [file, onUpload]);
 
   return (
     <div>
@@ -33,7 +45,7 @@ export default function ResumeUpload() {
         <div className={styles.fileInfo}>
           <span>{file.name}</span>
           <button className={styles.removeButton} onClick={removeFile}>
-            Remove
+            remove
           </button>
         </div>
       )}

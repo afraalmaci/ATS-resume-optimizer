@@ -1,0 +1,21 @@
+.textarea {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid gray;
+  resize: vertical;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.error {
+  color: red;
+}

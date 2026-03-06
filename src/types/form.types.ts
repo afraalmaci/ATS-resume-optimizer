@@ -1,7 +1,3 @@
-export type ResumeFormData = {
-  resume: File
-}
+export type MultiStepFormProps = { steps: React.ReactNode[] }
 
-export type JobDescriptionFormData = {
-  jobDescription: string
-}
+export type ResumeUploadProps = { onUpload?: (text: string) => void; };
