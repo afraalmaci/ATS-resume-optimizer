@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/styles/JobDescriptionForm.module.css"],"sourcesContent":[".textarea {\n  padding: 10px;\n  border-radius: 8px;\n  border: 1px solid gray;\n  resize: vertical;\n}\n\n.container {\n  display: flex;\n  flex-direction: column;\n  gap: 10px;\n}\n\n.footer {\n  display: flex;\n  justify-content: space-between;\n}\n\n.error {\n  color: red;\n}"],"names":[],"mappings":"AAAA;;;;;;;AAOA;;;;;;AAMA;;;;;AAKA"}}]
+}

@@ -1,0 +1,36 @@
+/* [project]/src/styles/MultiStepForm.module.css [app-client] (css) */
+.MultiStepForm-module__OMuZCW__container {
+  color: #ddd;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  background: #0a0a0a;
+  border-radius: 12px;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+}
+
+@media (max-width: 640px) {
+  .MultiStepForm-module__OMuZCW__container {
+    padding: 16px;
+  }
+}
+
+.MultiStepForm-module__OMuZCW__footer {
+  justify-content: space-between;
+  gap: 10px;
+  display: flex;
+}
+
+.MultiStepForm-module__OMuZCW__buttonAuto {
+  margin-left: auto;
+}
+
+.MultiStepForm-module__OMuZCW__buttonBack {
+  margin-right: auto;
+}
+
+/*# sourceMappingURL=src_styles_MultiStepForm_module_css_bad6b30c._.single.css.map*/

@@ -1,0 +1,24 @@
+/* [project]/src/styles/JobDescriptionForm.module.css [app-client] (css) */
+.JobDescriptionForm-module__kAfr3G__textarea {
+  resize: vertical;
+  border: 1px solid gray;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.JobDescriptionForm-module__kAfr3G__container {
+  flex-direction: column;
+  gap: 10px;
+  display: flex;
+}
+
+.JobDescriptionForm-module__kAfr3G__footer {
+  justify-content: space-between;
+  display: flex;
+}
+
+.JobDescriptionForm-module__kAfr3G__error {
+  color: red;
+}
+
+/*# sourceMappingURL=src_styles_JobDescriptionForm_module_css_bad6b30c._.single.css.map*/

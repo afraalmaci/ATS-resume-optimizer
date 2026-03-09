@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/styles/ResumeUpload.module.css"],"sourcesContent":[".dropzone {\n  border: 2px dashed gray;\n  padding: 40px;\n  text-align: center;\n  border-radius: 8px;\n  cursor: pointer;\n  transition: background 0.2s ease;\n}\n\n.dropzoneActive {\n  background-color: #f0f0f0;\n}\n\n.fileInfo {\n  margin-top: 10px;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n\n.removeButton {\n  background: red;\n  color: white;\n  border: none;\n  padding: 4px 8px;\n  border-radius: 4px;\n  cursor: pointer;\n  font-size: 0.9rem;\n}\n\n.removeButton:hover {\n  opacity: 0.8;\n}"],"names":[],"mappings":"AAAA;;;;;;;;;AASA;;;;AAIA;;;;;;;AAOA;;;;;;;;;;AAUA"}}]
+}

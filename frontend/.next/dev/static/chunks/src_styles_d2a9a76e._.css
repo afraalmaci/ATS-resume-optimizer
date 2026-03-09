@@ -1,0 +1,94 @@
+/* [project]/src/styles/MultiStepForm.module.css [app-client] (css) */
+.MultiStepForm-module__OMuZCW__container {
+  color: #ddd;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  background: #0a0a0a;
+  border-radius: 12px;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+}
+
+@media (max-width: 640px) {
+  .MultiStepForm-module__OMuZCW__container {
+    padding: 16px;
+  }
+}
+
+.MultiStepForm-module__OMuZCW__footer {
+  justify-content: space-between;
+  gap: 10px;
+  display: flex;
+}
+
+.MultiStepForm-module__OMuZCW__buttonAuto {
+  margin-left: auto;
+}
+
+.MultiStepForm-module__OMuZCW__buttonBack {
+  margin-right: auto;
+}
+
+/* [project]/src/styles/ResumeUpload.module.css [app-client] (css) */
+.ResumeUpload-module__zh5EMG__dropzone {
+  text-align: center;
+  cursor: pointer;
+  border: 2px dashed gray;
+  border-radius: 8px;
+  padding: 40px;
+  transition: background .2s;
+}
+
+.ResumeUpload-module__zh5EMG__dropzoneActive {
+  background-color: #f0f0f0;
+}
+
+.ResumeUpload-module__zh5EMG__fileInfo {
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  display: flex;
+}
+
+.ResumeUpload-module__zh5EMG__removeButton {
+  color: #fff;
+  cursor: pointer;
+  background: red;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: .9rem;
+}
+
+.ResumeUpload-module__zh5EMG__removeButton:hover {
+  opacity: .8;
+}
+
+/* [project]/src/styles/JobDescriptionForm.module.css [app-client] (css) */
+.JobDescriptionForm-module__kAfr3G__textarea {
+  resize: vertical;
+  border: 1px solid gray;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.JobDescriptionForm-module__kAfr3G__container {
+  flex-direction: column;
+  gap: 10px;
+  display: flex;
+}
+
+.JobDescriptionForm-module__kAfr3G__footer {
+  justify-content: space-between;
+  display: flex;
+}
+
+.JobDescriptionForm-module__kAfr3G__error {
+  color: red;
+}
+
+/*# sourceMappingURL=src_styles_d2a9a76e._.css.map*/
