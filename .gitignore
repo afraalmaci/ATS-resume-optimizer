@@ -46,3 +46,4 @@ storybook-static
 /frontend/node_modules
 /backend/node_modules
 .env
+!.env.example

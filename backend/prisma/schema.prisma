@@ -1,0 +1,34 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Resume {
+  id          Int          @id @default(autoincrement())
+  name        String
+  email       String       @unique
+  experiences Experience[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model JobDescription {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model Experience {
+  id        Int       @id @default(autoincrement())
+  company   String
+  role      String
+  resume    Resume    @relation(fields: [resumeId], references: [id])
+  resumeId  Int
+  startDate DateTime
+  endDate   DateTime?
+}
