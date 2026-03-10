@@ -3,7 +3,7 @@ import { IsNotEmpty, IsString } from 'class-validator';
 export class CreateAnalysisDto {
   @IsNotEmpty()
   @IsString()
-  cvText: string;
+  resume: string;
 
   @IsNotEmpty()
   @IsString()

@@ -1,28 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAnalysisDto } from './dto/create-analysis.dto';
-
-export interface Analysis {
-  id: string;
-  cvText: string;
-  jobDescription: string;
-  mockAIResponse: string;
-}
+import OpenAI from 'openai';
 
 @Injectable()
 export class AnalysisService {
-  private analyses: Analysis[] = [];
-  create(dto: CreateAnalysisDto): Analysis {
-  const result: Analysis = {
-        id: (this.analyses.length + 1).toString(),
-        cvText: dto.cvText,
-        jobDescription: dto.jobDescription,
-        mockAIResponse: `Mock analysis for CV: "${dto.cvText}" and Job: "${dto.jobDescription}"`,
-   };
-   this.analyses.push(result);
-   return result;
+  private openai: OpenAI;
+
+  constructor() {
+    this.openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
   }
 
-  findOne(id: string) {
-    return this.analyses.find(a => a.id === id);
+  async analyzeResume(resumeText: string, jobDesc: string) {
+    try {
+      const response = await this.openai.chat.completions.create({
+        model: 'gpt-4',
+        messages: [
+          { role: 'system', content: 'You are a helpful assistant.' },
+          { role: 'user', content: `Resume: ${resumeText}\nJob Description: ${jobDesc}` },
+        ],
+      });
+
+      return response.choices[0].message?.content;
+    } catch (err) {
+      console.error('OpenAI API error', err);
+      throw err;
+    }
   }
 }
