@@ -6,6 +6,7 @@ import ResumeUpload from "@/components/forms/ResumeUpload";
 import JobDescriptionForm from "@/components/forms/JobDescriptionForm";
 import { Toaster, toast } from "react-hot-toast";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { API_URL } from "@/lib/config";
 
 export default function TestFormPage() {
   const [resumeFile, setResumeFile] = useState<File | null>(null);
@@ -24,7 +25,7 @@ export default function TestFormPage() {
       formData.append("resume", resumeFile);
       formData.append("jobDescription", jobDescription);
 
-      const res = await fetch("http://localhost:3001/analysis", {
+      const res = await fetch(`${API_URL}/analysis`, {
         method: "POST",
         body: formData,
       });
