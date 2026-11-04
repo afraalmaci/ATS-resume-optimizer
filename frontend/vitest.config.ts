@@ -10,17 +10,27 @@ import { playwright } from '@vitest/browser-playwright';
 const dirname =
   typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url));
 
-// More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
+  resolve: {
+    alias: { '@': path.join(dirname, 'src') },
+  },
   test: {
     projects: [
       {
+        // Fast component/unit tests in jsdom. Run with: npm run test:unit
         extends: true,
-        plugins: [
-          // The plugin will run tests for the stories defined in your Storybook config
-          // See options at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon#storybooktest
-          storybookTest({ configDir: path.join(dirname, '.storybook') }),
-        ],
+        test: {
+          name: 'unit',
+          environment: 'jsdom',
+          globals: true,
+          include: ['src/**/*.test.{ts,tsx}'],
+          setupFiles: ['./vitest.setup.unit.ts'],
+        },
+      },
+      {
+        // Storybook stories as browser tests. Needs `npx playwright install chromium`.
+        extends: true,
+        plugins: [storybookTest({ configDir: path.join(dirname, '.storybook') })],
         test: {
           name: 'storybook',
           browser: {

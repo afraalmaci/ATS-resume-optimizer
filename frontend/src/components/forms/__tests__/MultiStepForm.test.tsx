@@ -1,11 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import MultiStepForm from '../MultiStepForm';
-import { toast } from 'react-hot-toast';
-
-// toast mock
-vi.mock('react-hot-toast', () => ({
-  toast: { success: vi.fn(), error: vi.fn() },
-}));
 
 const steps = [
   <div key="step1">Step 1 Content</div>,
@@ -13,34 +7,43 @@ const steps = [
   <div key="step3">Step 3 Content</div>,
 ];
 
+const nextButton = () => screen.getByRole('button', { name: 'Next' });
+const backButton = () => screen.getByRole('button', { name: 'Back' });
+
+// AnimatePresence mode="wait" mounts the next step only after the exit
+// animation of the current one finishes, so step transitions are asserted
+// with async findBy* queries instead of synchronous getBy* queries.
 describe('MultiStepForm', () => {
-  it('should render first step correctly', () => {
+  it('renders the first step with Next and without Back', () => {
     render(<MultiStepForm steps={steps} />);
     expect(screen.getByText('Step 1 Content')).toBeInTheDocument();
-    expect(screen.queryByText('Back')).not.toBeInTheDocument();
-    expect(screen.getByText('Next')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Back' })).not.toBeInTheDocument();
+    expect(nextButton()).toBeInTheDocument();
   });
 
-  it('should go to next step when Next button is clicked', () => {
+  it('goes to the next step and shows Back', async () => {
     render(<MultiStepForm steps={steps} />);
-    fireEvent.click(screen.getByText('Next'));
-    expect(screen.getByText('Step 2 Content')).toBeInTheDocument();
-    expect(screen.getByText('Back')).toBeInTheDocument();
+    fireEvent.click(nextButton());
+    expect(await screen.findByText('Step 2 Content')).toBeInTheDocument();
+    expect(screen.queryByText('Step 1 Content')).not.toBeInTheDocument();
+    expect(backButton()).toBeInTheDocument();
   });
 
-  it('should go back to previous step when Back button is clicked', () => {
+  it('goes back to the previous step', async () => {
     render(<MultiStepForm steps={steps} />);
-    fireEvent.click(screen.getByText('Next')); // Step 2
-    fireEvent.click(screen.getByText('Back')); // Step 1
-    expect(screen.getByText('Step 1 Content')).toBeInTheDocument();
+    fireEvent.click(nextButton());
+    await screen.findByText('Step 2 Content');
+    fireEvent.click(backButton());
+    expect(await screen.findByText('Step 1 Content')).toBeInTheDocument();
+    expect(screen.queryByText('Step 2 Content')).not.toBeInTheDocument();
   });
 
-  it('should call toast success on Finish', async () => {
+  it('hides Next on the last step, where the step content owns submission', async () => {
     render(<MultiStepForm steps={steps} />);
-    // Go to last step
-    fireEvent.click(screen.getByText('Next'));
-    fireEvent.click(screen.getByText('Next'));
-    fireEvent.click(screen.getByText('Finish'));
-    expect(toast.success).toHaveBeenCalledWith('Form successfully submitted!');
+    fireEvent.click(nextButton());
+    await screen.findByText('Step 2 Content');
+    fireEvent.click(nextButton());
+    expect(await screen.findByText('Step 3 Content')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Next' })).not.toBeInTheDocument();
   });
 });
