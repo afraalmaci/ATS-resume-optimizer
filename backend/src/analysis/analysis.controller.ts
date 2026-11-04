@@ -1,5 +1,6 @@
 import {
   Controller,
+  Logger,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -12,6 +13,8 @@ import { normalizeSkill } from "./engine/skill-normalizer";
 import { calculateATSScore } from "./engine/ats-scorer";
 @Controller("analysis")
 export class AnalysisController {
+  private readonly logger = new Logger(AnalysisController.name);
+
   @Post()
   @UseInterceptors(FileInterceptor("resume"))
   async analyzeResume(
@@ -32,29 +35,20 @@ export class AnalysisController {
       resumeText = (result.text as string[]).join("\n");
     }
 
-    console.log("===== DEBUG =====");
-    console.log("Resume Text:", resumeText.slice(0, 500));
-    console.log("Job Description:", jobDescription);
-
     // ===== SKILL EXTRACTION =====
     const resumeSkillsRaw = extractSkills(resumeText);
     const jobSkillsRaw = extractSkills(jobDescription);
-
-    console.log("Raw resume skills:", resumeSkillsRaw);
-    console.log("Raw job skills:", jobSkillsRaw);
 
     // ===== NORMALIZATION =====
     const resumeSkills = resumeSkillsRaw.map((s) => normalizeSkill(s));
     const jobSkills = jobSkillsRaw.map((s) => normalizeSkill(s));
 
-    console.log("Normalized resume skills:", resumeSkills);
-    console.log("Normalized job skills:", jobSkills);
-
     // ===== ATS SCORE ENGINE =====
     const atsResult = calculateATSScore(jobSkills, resumeSkills);
 
-    console.log("ATS Result:", atsResult);
-    console.log("=================");
+    this.logger.debug(
+      `Analyzed resume: ${resumeSkills.length} resume skills, ${jobSkills.length} job skills, score ${atsResult.score}`,
+    );
 
     return {
       score: atsResult.score,
