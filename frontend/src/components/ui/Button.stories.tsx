@@ -1,38 +1,22 @@
-import React from "react";
-import { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import Button from "./Button";
 
-// 1️⃣ Storybook metadata
-export default {
-  title: "UI/Button",   // Storybook sol menüde görünecek başlık
-  component: Button,    // Hangi component’in story’si
+const meta = {
+  title: "UI/Button",
+  component: Button,
   argTypes: {
-    variant: {
-      control: { type: "select" },
-      options: ["primary", "secondary", "danger"], // Button prop seçenekleri
-    },
-    children: { control: "text" }, // Button içindeki yazıyı değiştirebilmek için
+    variant: { control: { type: "select" }, options: ["primary", "secondary"] },
+    children: { control: "text" },
   },
-} as Meta;
+} satisfies Meta<typeof Button>;
 
-// 2️⃣ Template oluşturma
-const Template: StoryFn<any> = (args) => <Button {...args} />;
+export default meta;
+type Story = StoryObj<typeof meta>;
 
-// 3️⃣ Farklı story’leri oluştur
-export const Primary = Template.bind({});
-Primary.args = {
-  variant: "primary",
-  children: "Primary Button",
+export const Primary: Story = {
+  args: { variant: "primary", children: "Primary Button" },
 };
 
-export const Secondary = Template.bind({});
-Secondary.args = {
-  variant: "secondary",
-  children: "Secondary Button",
-};
-
-export const Danger = Template.bind({});
-Danger.args = {
-  variant: "danger",
-  children: "Danger Button",
+export const Secondary: Story = {
+  args: { variant: "secondary", children: "Secondary Button" },
 };
