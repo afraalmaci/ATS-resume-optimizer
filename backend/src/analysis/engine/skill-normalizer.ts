@@ -1,20 +1,20 @@
 export const SKILL_SYNONYMS: Record<string, string> = {
-  "react.js": "react",
-  "reactjs": "react",
+  'react.js': 'react',
+  reactjs: 'react',
 
-  "node.js": "node",
-  "nodejs": "node",
+  'node.js': 'node',
+  nodejs: 'node',
 
-  "js": "javascript",
-  "javascript": "javascript",
+  js: 'javascript',
+  javascript: 'javascript',
 
-  "ts": "typescript",
-  "typescript": "typescript",
+  ts: 'typescript',
+  typescript: 'typescript',
 
-  "mongo": "mongodb",
-  "mongo db": "mongodb",
+  mongo: 'mongodb',
+  'mongo db': 'mongodb',
 
-  "aws cloud": "aws",
+  'aws cloud': 'aws',
 };
 
 export function normalizeSkill(skill: string): string {

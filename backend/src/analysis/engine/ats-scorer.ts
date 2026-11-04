@@ -1,13 +1,11 @@
-import { matchSkill } from "./skill-matcher";
+import { matchSkill } from './skill-matcher';
 
 export function calculateATSScore(jobSkills: string[], resumeSkills: string[]) {
-
   let totalScore = 0;
   const missingSkills: string[] = [];
   const matches: any[] = [];
 
   for (const jobSkill of jobSkills) {
-
     const match = matchSkill(jobSkill, resumeSkills);
 
     totalScore += match.score;
