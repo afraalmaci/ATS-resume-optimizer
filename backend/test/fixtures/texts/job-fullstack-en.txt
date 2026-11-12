@@ -1,0 +1,17 @@
+Medior Full-Stack Developer
+
+About the role
+You will build our customer portal with React and TypeScript on the frontend and Node.js (NestJS) on the backend. Our data lives in PostgreSQL and Redis, and everything runs in Docker on AWS. You will work closely with the rest of the team on new features.
+
+Requirements
+- 3+ years of experience with React and TypeScript
+- Experience building REST APIs with Node.js
+- Comfortable with SQL and PostgreSQL
+- Familiar with CI/CD (we use GitHub Actions)
+- Experience with automated testing (Jest, Playwright)
+
+Nice to have
+GraphQL, Kubernetes, Terraform
+
+We offer
+A hybrid work model, a learning budget and a friendly team where you can express your ideas.

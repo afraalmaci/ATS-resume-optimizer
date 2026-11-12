@@ -1,0 +1,13 @@
+Jane Doe - Full-Stack Developer
+
+Skills
+JavaScript/TypeScript, React.js, Node.js, Express.js, MongoDB, Docker
+
+Experience
+Software Developer, Example Company (2021 - present)
+- Built a REST API for order tracking used by 20,000 customers
+- Deployed services on AWS (EC2, S3) with Docker
+- Led the migration of the dashboard from Vue.js to React
+
+Education
+BSc Computer Science

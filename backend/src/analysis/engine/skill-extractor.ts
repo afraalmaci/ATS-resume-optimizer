@@ -1,6 +1,6 @@
 // engine/skill-extractor.ts
-import { SKILLS, SKILL_ID_TERMS } from './skills';
-import { cleanText } from './text-utils';
+import { SKILLS, SKILL_EXACT_CASE_TERMS, SKILL_ID_TERMS } from './skills';
+import { normalizeWhitespace } from './text-utils';
 import { SKILL_SYNONYMS } from './skill-normalizer';
 
 function escapeRegExp(value: string): string {
@@ -26,17 +26,23 @@ interface Hit {
 }
 
 export function extractSkills(text: string): string[] {
-  const cleaned = cleanText(text); // lowercase + trim + normalize whitespace
-  const terms = [...SKILL_ID_TERMS, ...Object.keys(SKILL_SYNONYMS)];
+  const original = normalizeWhitespace(text);
+  const cleaned = original.toLowerCase();
   const hits: Hit[] = [];
 
-  for (const term of terms) {
-    const skill = SKILL_SYNONYMS[term] ?? term;
-    if (!SKILLS.includes(skill)) continue;
-
-    for (const match of cleaned.matchAll(termPattern(term))) {
+  const addHits = (haystack: string, term: string, skill: string) => {
+    if (!SKILLS.includes(skill)) return;
+    for (const match of haystack.matchAll(termPattern(term))) {
       hits.push({ skill, start: match.index, end: match.index + term.length });
     }
+  };
+
+  for (const term of [...SKILL_ID_TERMS, ...Object.keys(SKILL_SYNONYMS)]) {
+    addHits(cleaned, term, SKILL_SYNONYMS[term] ?? term);
+  }
+  // Names that are also common words only count with their exact capitalization.
+  for (const [form, skill] of SKILL_EXACT_CASE_TERMS) {
+    addHits(original, form, skill);
   }
 
   // Longest phrase wins where matches overlap, so "react native" counts as

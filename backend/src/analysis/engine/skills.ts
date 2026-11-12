@@ -22,6 +22,11 @@ export interface SkillDefinition {
    */
   aliasesOnly?: boolean;
   /**
+   * Spellings matched only with exactly this capitalization, for names that
+   * are also common words: "Express" is the framework, "express" the verb.
+   */
+  exactCaseForms?: string[];
+  /**
    * Skills this one implies. A resume with this skill gets partial credit for
    * a job asking for an implied one (Next.js implies React), not the reverse.
    */
@@ -144,6 +149,8 @@ export const SKILL_TAXONOMY: readonly SkillDefinition[] = [
     label: 'Express',
     category: 'backend',
     aliases: ['express.js', 'expressjs'],
+    aliasesOnly: true,
+    exactCaseForms: ['Express'],
     implies: ['node'],
   },
   {
@@ -333,6 +340,12 @@ export const SKILLS: string[] = SKILL_TAXONOMY.map((s) => s.id);
 export const SKILL_ID_TERMS: string[] = SKILL_TAXONOMY.filter(
   (s) => !s.aliasesOnly,
 ).map((s) => s.id);
+
+/** [form, id] pairs that must match with exact capitalization. */
+export const SKILL_EXACT_CASE_TERMS: [string, string][] =
+  SKILL_TAXONOMY.flatMap((s) =>
+    (s.exactCaseForms ?? []).map((form): [string, string] => [form, s.id]),
+  );
 
 export const SKILL_BY_ID: ReadonlyMap<string, SkillDefinition> = new Map(
   SKILL_TAXONOMY.map((s) => [s.id, s]),
