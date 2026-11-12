@@ -1,18 +1,61 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AnalysisController } from './analysis.controller';
+import { INestApplication } from '@nestjs/common';
+import { Test } from '@nestjs/testing';
+import request from 'supertest';
+import { App } from 'supertest/types';
+import { AnalysisModule } from './analysis.module';
+import { AnalysisResponse } from './dto/analysis-response.dto';
+import { makePdf } from '../../test/fixtures/make-pdf';
 
-describe('AnalysisController', () => {
-  let controller: AnalysisController;
+const JOB = 'We are hiring a developer with React, Node.js and Docker.';
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [AnalysisController],
+describe('POST /analysis', () => {
+  let app: INestApplication<App>;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      imports: [AnalysisModule],
     }).compile();
-
-    controller = module.get<AnalysisController>(AnalysisController);
+    app = moduleRef.createNestApplication();
+    await app.init();
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
+  afterAll(async () => {
+    await app.close();
+  });
+
+  const post = () => request(app.getHttpServer()).post('/analysis');
+
+  it('returns the analysis for a valid request', async () => {
+    const res = await post()
+      .attach('resume', makePdf('Skills: React, Node.js, AWS'), {
+        filename: 'resume.pdf',
+        contentType: 'application/pdf',
+      })
+      .field('jobDescription', JOB)
+      .expect(201);
+
+    const { matches, ...rest } = res.body as AnalysisResponse;
+    expect(rest).toEqual({
+      score: 67,
+      resumeSkills: ['react', 'node', 'aws'],
+      jobSkills: ['react', 'node', 'docker'],
+      missingSkills: ['docker'],
+    });
+    expect(matches).toHaveLength(3);
+  });
+
+  it('returns 400 with a message when no file is sent', async () => {
+    const res = await post().field('jobDescription', JOB).expect(400);
+    expect((res.body as { message: string }).message).toMatch(/resume/i);
+  });
+
+  it('returns 413 for a file over 5 MB', async () => {
+    await post()
+      .attach('resume', Buffer.alloc(5 * 1024 * 1024 + 1), {
+        filename: 'big.pdf',
+        contentType: 'application/pdf',
+      })
+      .field('jobDescription', JOB)
+      .expect(413);
   });
 });
