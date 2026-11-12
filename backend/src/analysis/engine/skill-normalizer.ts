@@ -2,6 +2,8 @@ export const SKILL_SYNONYMS: Record<string, string> = {
   'react.js': 'react',
   reactjs: 'react',
 
+  'next.js': 'nextjs',
+
   'node.js': 'node',
   nodejs: 'node',
 
