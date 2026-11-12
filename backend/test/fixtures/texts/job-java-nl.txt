@@ -1,0 +1,14 @@
+Java Developer (Spring Boot) - Utrecht
+
+Wat ga je doen?
+Je ontwikkelt microservices in Java en Spring Boot, die met elkaar communiceren via Kafka. Je schrijft unittests met JUnit en werkt in een Scrum-team.
+
+Wat vragen wij?
+- HBO werk- en denkniveau
+- Minimaal 3 jaar ervaring met Java en Spring Boot
+- Kennis van SQL-databases (bij voorkeur PostgreSQL of SQL Server)
+- Ervaring met Docker en Kubernetes is een pré
+- Goede beheersing van de Nederlandse en Engelse taal
+
+Wat bieden wij?
+Een leaseauto, een opleidingsbudget en ruimte om te gaan voor je ambities.

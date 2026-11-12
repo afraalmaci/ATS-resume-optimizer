@@ -1,0 +1,12 @@
+Frontend Geliştirici (React)
+
+Aranan nitelikler
+- React ve Next.js ile en az 2 yıl deneyim
+- JavaScript (ES6+) ve TypeScript bilgisi
+- HTML, CSS ve Tailwind CSS'e hakim
+- Redux veya benzeri state yönetimi araçlarını kullanmış
+- Git ve Agile/Scrum süreçlerine aşina
+- REST API'lerle çalışmış
+
+Tercih sebebi
+Jest ile birim test yazma deneyimi, Figma bilgisi.

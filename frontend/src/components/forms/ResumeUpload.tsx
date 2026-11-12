@@ -5,15 +5,18 @@ import { useResumeUpload } from "@/hooks/useResumeUpload";
 import styles from "@/styles/ResumeUpload.module.css";
 
 interface ResumeUploadProps {
-  onUpload: (file: File) => void;
+  /** The currently selected file, kept by the parent across steps. */
+  file?: File | null;
+  /** Called with the selected file, or null when it is removed. */
+  onUpload: (file: File | null) => void;
 }
 
-export default function ResumeUpload({ onUpload }: ResumeUploadProps) {
+export default function ResumeUpload({ file: selected = null, onUpload }: ResumeUploadProps) {
   const { file, loading, removeFile, getRootProps, getInputProps, isDragActive } =
-    useResumeUpload();
+    useResumeUpload(selected);
 
   React.useEffect(() => {
-    if (file && onUpload) onUpload(file); // File'i direkt gönderiyoruz
+    onUpload(file);
   }, [file, onUpload]);
 
   return (

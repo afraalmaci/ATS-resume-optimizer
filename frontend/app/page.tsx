@@ -6,12 +6,13 @@ import ResumeUpload from "@/components/forms/ResumeUpload";
 import JobDescriptionForm from "@/components/forms/JobDescriptionForm";
 import { Toaster, toast } from "react-hot-toast";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
-import { API_URL } from "@/lib/config";
+import { analyzeResume } from "@/lib/api";
+import type { AnalysisResponse } from "@/types/analysis";
 
 export default function TestFormPage() {
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState("");
-  const [analysisResult, setAnalysisResult] = useState<any>(null);
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResponse | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
@@ -20,23 +21,9 @@ export default function TestFormPage() {
 
     try {
       setLoading(true);
-
-      const formData = new FormData();
-      formData.append("resume", resumeFile);
-      formData.append("jobDescription", jobDescription);
-
-      const res = await fetch(`${API_URL}/analysis`, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) throw new Error("Failed to fetch");
-
-      const data = await res.json();
-      setAnalysisResult(data);
-
-    } catch (err: any) {
-      toast.error(err.message);
+      setAnalysisResult(await analyzeResume(resumeFile, jobDescription));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Analysis failed");
     } finally {
       setLoading(false);
     }
@@ -49,7 +36,7 @@ export default function TestFormPage() {
     ) || [];
 
   const steps = [
-    <ResumeUpload key="resume" onUpload={setResumeFile} />,
+    <ResumeUpload key="resume" file={resumeFile} onUpload={setResumeFile} />,
 
     <JobDescriptionForm
       key="job"
@@ -100,7 +87,10 @@ export default function TestFormPage() {
     <main style={{ padding: 50 }}>
       <h1>ATS Resume Analyzer</h1>
 
-      <MultiStepForm steps={steps} />
+      <MultiStepForm
+        steps={steps}
+        canGoNext={[resumeFile !== null, jobDescription.trim() !== ""]}
+      />
 
       <Toaster position="top-right" />
     </main>

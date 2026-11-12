@@ -101,6 +101,22 @@ describe('extractSkills', () => {
       expect(extractSkills('RESTful services')).toEqual(['rest']);
     });
 
+    it('does not read the verb "express" as Express', () => {
+      expect(extractSkills('a team where you can express your ideas')).toEqual(
+        [],
+      );
+    });
+
+    it('finds Express when it is written as a name', () => {
+      expect(extractSkills('Node.js, Express and MongoDB')).toEqual([
+        'node',
+        'express',
+        'mongodb',
+      ]);
+      expect(extractSkills('ExpressJS')).toEqual(['express']);
+      expect(extractSkills('express.js')).toEqual(['express']);
+    });
+
     it('does not read the word "go" as Go', () => {
       expect(extractSkills('Ready to go to market')).not.toContain('go');
     });
