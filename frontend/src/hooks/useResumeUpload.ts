@@ -3,11 +3,11 @@
 import { useState, useCallback } from "react";
 import { useDropzone, FileRejection } from "react-dropzone";
 import { toast } from "react-hot-toast";
+import { RESUME_MAX_BYTES } from "@/schemas/formSchema";
 
-const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
-
-export function useResumeUpload() {
-  const [file, setFile] = useState<File | null>(null);
+// initialFile restores the selection when the step is shown again.
+export function useResumeUpload(initialFile: File | null = null) {
+  const [file, setFile] = useState<File | null>(initialFile);
   const [loading, setLoading] = useState(false);
 
   const onDrop = useCallback((acceptedFiles: File[], fileRejections: FileRejection[]) => {
@@ -18,8 +18,8 @@ export function useResumeUpload() {
 
     const selectedFile = acceptedFiles[0];
 
-    if (selectedFile.size > MAX_FILE_SIZE) {
-      toast.error("File size must be less than 2MB");
+    if (selectedFile.size > RESUME_MAX_BYTES) {
+      toast.error("File size must be 5 MB or less");
       return;
     }
 

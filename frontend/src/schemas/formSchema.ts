@@ -1,12 +1,15 @@
 import { z } from "zod"
 
+// Must match MAX_RESUME_BYTES in backend/src/analysis/analysis.constants.ts.
+export const RESUME_MAX_BYTES = 5 * 1024 * 1024
+
 export const resumeSchema = z.object({
   resume: z
     .instanceof(File)
     .refine((file) => file.type === "application/pdf", {
       message: "Resume must be a PDF file",
     })
-    .refine((file) => file.size < 5 * 1024 * 1024, {
+    .refine((file) => file.size <= RESUME_MAX_BYTES, {
       message: "File size must be less than 5MB",
     }),
 })

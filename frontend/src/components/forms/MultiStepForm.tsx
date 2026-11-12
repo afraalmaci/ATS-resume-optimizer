@@ -5,13 +5,16 @@ import { motion, AnimatePresence } from "framer-motion";
 
 interface Props {
   steps: React.ReactNode[];
+  /** Per step: whether Next is allowed. Missing entries default to true. */
+  canGoNext?: boolean[];
 }
 
-export default function MultiStepForm({ steps }: Props) {
+export default function MultiStepForm({ steps, canGoNext = [] }: Props) {
   const [step, setStep] = useState(0);
+  const nextAllowed = canGoNext[step] ?? true;
 
   const next = () => {
-    if (step < steps.length - 1) {
+    if (nextAllowed && step < steps.length - 1) {
       setStep(step + 1);
     }
   };
@@ -45,7 +48,7 @@ export default function MultiStepForm({ steps }: Props) {
         )}
 
         {step < steps.length - 1 && (
-          <button onClick={next}>
+          <button onClick={next} disabled={!nextAllowed}>
             Next
           </button>
         )}

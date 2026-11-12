@@ -46,4 +46,18 @@ describe('MultiStepForm', () => {
     expect(await screen.findByText('Step 3 Content')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Next' })).not.toBeInTheDocument();
   });
+
+  it('disables Next while the current step is not complete', async () => {
+    const { rerender } = render(
+      <MultiStepForm steps={steps} canGoNext={[false, true]} />,
+    );
+    expect(nextButton()).toBeDisabled();
+    fireEvent.click(nextButton());
+    expect(screen.getByText('Step 1 Content')).toBeInTheDocument();
+
+    rerender(<MultiStepForm steps={steps} canGoNext={[true, true]} />);
+    expect(nextButton()).toBeEnabled();
+    fireEvent.click(nextButton());
+    expect(await screen.findByText('Step 2 Content')).toBeInTheDocument();
+  });
 });
