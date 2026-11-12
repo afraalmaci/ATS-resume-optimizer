@@ -17,7 +17,10 @@ describe('POST /analysis', () => {
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       // No .env and a disabled AI client: tests never use a real API key.
-      imports: [ConfigModule.forRoot({ ignoreEnvFile: true }), AnalysisModule],
+      imports: [
+        ConfigModule.forRoot({ ignoreEnvFile: true, isGlobal: true }),
+        AnalysisModule,
+      ],
     })
       .overrideProvider(LLM_CLIENT)
       .useValue(disabledLlmClient())
@@ -65,5 +68,40 @@ describe('POST /analysis', () => {
       })
       .field('jobDescription', JOB)
       .expect(413);
+  });
+});
+
+describe('POST /analysis rate limit', () => {
+  let app: INestApplication<App>;
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({ ignoreEnvFile: true, isGlobal: true }),
+        AnalysisModule,
+      ],
+    })
+      .overrideProvider(LLM_CLIENT)
+      .useValue(disabledLlmClient())
+      .compile();
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it('allows 5 analyses a minute per address, then answers 429', async () => {
+    const post = () =>
+      request(app.getHttpServer())
+        .post('/analysis')
+        .field('jobDescription', JOB);
+
+    for (let i = 0; i < 5; i++) {
+      await post().expect(400); // no file, but still counted
+    }
+    const res = await post().expect(429);
+    expect((res.body as { message: string }).message).toMatch(/wait/i);
   });
 });

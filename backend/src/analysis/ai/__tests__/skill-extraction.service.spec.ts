@@ -1,4 +1,7 @@
-import { SkillExtractionService } from '../skill-extraction.service';
+import {
+  DEFAULT_AI_EXTRACTION_OPTIONS,
+  SkillExtractionService,
+} from '../skill-extraction.service';
 import { FakeLlmClient } from './fake-llm-client';
 
 const RESUME =
@@ -101,6 +104,62 @@ describe('SkillExtractionService', () => {
       );
       expect(result.source).toBe('rules');
       expect(llm.requests).toHaveLength(0);
+    });
+  });
+
+  describe('protecting the free quota', () => {
+    const aiResult = () => ({ resumeSkills: ['react'], jobSkills: ['react'] });
+
+    it('reuses the AI result for the same texts instead of calling again', async () => {
+      const llm = new FakeLlmClient(true, aiResult);
+      const service = new SkillExtractionService(llm);
+
+      const first = await service.extract(RESUME, JOB);
+      const second = await service.extract(RESUME, JOB);
+
+      expect(second).toEqual(first);
+      expect(second.source).toBe('ai');
+      expect(llm.requests).toHaveLength(1);
+    });
+
+    it('calls the AI again for different texts', async () => {
+      const llm = new FakeLlmClient(true, aiResult);
+      const service = new SkillExtractionService(llm);
+
+      await service.extract(RESUME, JOB);
+      await service.extract(RESUME, `${JOB} Also Kubernetes.`);
+
+      expect(llm.requests).toHaveLength(2);
+    });
+
+    it('does not cache a failed AI call', async () => {
+      let fail = true;
+      const llm = new FakeLlmClient(true, () => {
+        if (fail) throw new Error('timeout');
+        return aiResult();
+      });
+      const service = new SkillExtractionService(llm);
+
+      expect((await service.extract(RESUME, JOB)).source).toBe('rules');
+      fail = false;
+      expect((await service.extract(RESUME, JOB)).source).toBe('ai');
+    });
+
+    it('uses the rule engine once the daily AI limit is reached', async () => {
+      const llm = new FakeLlmClient(true, aiResult);
+      const service = new SkillExtractionService(llm, {
+        ...DEFAULT_AI_EXTRACTION_OPTIONS,
+        dailyLimit: 1,
+      });
+
+      expect((await service.extract(RESUME, JOB)).source).toBe('ai');
+      // Cached: does not count against the limit.
+      expect((await service.extract(RESUME, JOB)).source).toBe('ai');
+      // New texts, limit used up: rules, without calling the AI.
+      expect((await service.extract(RESUME, `${JOB} Go.`)).source).toBe(
+        'rules',
+      );
+      expect(llm.requests).toHaveLength(1);
     });
   });
 });
