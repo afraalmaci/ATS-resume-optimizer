@@ -1,6 +1,21 @@
-import { matchSkill } from './skill-matcher';
+import { matchSkill, MatchType } from './skill-matcher';
 
-export function calculateATSScore(jobSkills: string[], resumeSkills: string[]) {
+export interface SkillMatch {
+  skill: string;
+  matchType: MatchType;
+  score: number;
+}
+
+export interface ATSScoreResult {
+  score: number;
+  missingSkills: string[];
+  matches: SkillMatch[];
+}
+
+export function calculateATSScore(
+  jobSkills: string[],
+  resumeSkills: string[],
+): ATSScoreResult {
   // Nothing to match against; avoid dividing by zero.
   if (jobSkills.length === 0) {
     return { score: 0, missingSkills: [], matches: [] };
@@ -8,7 +23,7 @@ export function calculateATSScore(jobSkills: string[], resumeSkills: string[]) {
 
   let totalScore = 0;
   const missingSkills: string[] = [];
-  const matches: any[] = [];
+  const matches: SkillMatch[] = [];
 
   for (const jobSkill of jobSkills) {
     const match = matchSkill(jobSkill, resumeSkills);
@@ -26,17 +41,9 @@ export function calculateATSScore(jobSkills: string[], resumeSkills: string[]) {
     });
   }
 
-  let atsScore = Math.round((totalScore / jobSkills.length) * 100);
-
-  // extra skill bonus
-  if (resumeSkills.length > jobSkills.length) {
-    atsScore += 5;
-  }
-
-  if (atsScore > 100) atsScore = 100;
-
+  // The score is only how much of the job's skill list the resume covers.
   return {
-    score: atsScore,
+    score: Math.round((totalScore / jobSkills.length) * 100),
     missingSkills,
     matches,
   };
