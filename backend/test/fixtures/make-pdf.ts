@@ -1,8 +1,12 @@
-// Builds a minimal one-page PDF with the given text, for tests.
+// Builds a minimal one-page PDF with the given text (ASCII only; "\n" starts
+// a new line), for tests and the sample resume.
 // Pass an empty string for a PDF with no readable text (like a scanned image).
 export function makePdf(text: string): Buffer {
-  const escaped = text.replace(/[\\()]/g, '\\$&');
-  const content = text ? `BT /F1 12 Tf 72 720 Td (${escaped}) Tj ET` : '';
+  const lines = text
+    .split('\n')
+    .map((line) => `(${line.replace(/[\\()]/g, '\\$&')}) Tj T*`)
+    .join(' ');
+  const content = text ? `BT /F1 11 Tf 15 TL 56 760 Td ${lines} ET` : '';
   const objects = [
     '<< /Type /Catalog /Pages 2 0 R >>',
     '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',

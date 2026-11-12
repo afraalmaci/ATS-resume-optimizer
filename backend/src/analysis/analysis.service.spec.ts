@@ -30,6 +30,22 @@ describe('AnalysisService', () => {
     expect(result.source).toBe('rules');
   });
 
+  it('includes the display name and category of every skill it returns', async () => {
+    const result = await service.analyze(resume(), JOB);
+
+    expect(Object.keys(result.skills).sort()).toEqual([
+      'aws',
+      'docker',
+      'node',
+      'react',
+    ]);
+    expect(result.skills.node).toEqual({
+      label: 'Node.js',
+      category: 'backend',
+    });
+    expect(result.skills.aws).toEqual({ label: 'AWS', category: 'cloud' });
+  });
+
   it('scores the skills the AI found when the AI is configured', async () => {
     const llm = new FakeLlmClient(true, () => ({
       resumeSkills: ['react', 'testing'],

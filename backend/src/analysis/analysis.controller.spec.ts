@@ -44,7 +44,7 @@ describe('POST /analysis', () => {
       .field('jobDescription', JOB)
       .expect(201);
 
-    const { matches, ...rest } = res.body as AnalysisResponse;
+    const { matches, skills, ...rest } = res.body as AnalysisResponse;
     expect(rest).toEqual({
       score: 67,
       resumeSkills: ['react', 'node', 'aws'],
@@ -53,6 +53,7 @@ describe('POST /analysis', () => {
       source: 'rules',
     });
     expect(matches).toHaveLength(3);
+    expect(skills.react).toEqual({ label: 'React', category: 'frontend' });
   });
 
   it('returns 400 with a message when no file is sent', async () => {

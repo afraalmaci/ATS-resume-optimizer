@@ -10,9 +10,10 @@ import {
   MAX_JOB_DESCRIPTION_CHARS,
   MAX_RESUME_BYTES,
 } from './analysis.constants';
-import { AnalysisResponse } from './dto/analysis-response.dto';
+import { AnalysisResponse, SkillInfo } from './dto/analysis-response.dto';
 import { SkillExtractionService } from './ai/skill-extraction.service';
 import { calculateATSScore } from './engine/ats-scorer';
+import { SKILL_BY_ID } from './engine/skills';
 
 @Injectable()
 export class AnalysisService {
@@ -40,7 +41,15 @@ export class AnalysisService {
       `Analyzed resume (${source}): ${resumeSkills.length} resume skills, ${jobSkills.length} job skills, score ${score}`,
     );
 
-    return { score, resumeSkills, jobSkills, missingSkills, matches, source };
+    return {
+      score,
+      resumeSkills,
+      jobSkills,
+      missingSkills,
+      matches,
+      source,
+      skills: describeSkills([...resumeSkills, ...jobSkills]),
+    };
   }
 
   private validateResume(
@@ -91,4 +100,13 @@ export class AnalysisService {
     }
     return text;
   }
+}
+
+function describeSkills(ids: string[]): Record<string, SkillInfo> {
+  const skills: Record<string, SkillInfo> = {};
+  for (const id of ids) {
+    const skill = SKILL_BY_ID.get(id);
+    if (skill) skills[id] = { label: skill.label, category: skill.category };
+  }
+  return skills;
 }
