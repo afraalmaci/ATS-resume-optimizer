@@ -1,0 +1,106 @@
+import { SkillExtractionService } from '../skill-extraction.service';
+import { FakeLlmClient } from './fake-llm-client';
+
+const RESUME =
+  'Jane Doe, jane@example.com, +31 6 1234 5678. Skills: React, Node.js';
+const JOB = 'We need React, Docker and birim test experience.';
+
+describe('SkillExtractionService', () => {
+  it('uses the rule engine when no AI client is configured', async () => {
+    const llm = new FakeLlmClient(false);
+    const result = await new SkillExtractionService(llm).extract(RESUME, JOB);
+
+    expect(result).toEqual({
+      resumeSkills: ['react', 'node'],
+      jobSkills: ['react', 'docker'],
+      source: 'rules',
+    });
+    expect(llm.requests).toHaveLength(0);
+  });
+
+  it('uses the AI result when it is valid', async () => {
+    const llm = new FakeLlmClient(true, () => ({
+      resumeSkills: ['react', 'node'],
+      jobSkills: ['react', 'docker', 'testing'],
+    }));
+    const result = await new SkillExtractionService(llm).extract(RESUME, JOB);
+
+    expect(result).toEqual({
+      resumeSkills: ['react', 'node'],
+      jobSkills: ['react', 'docker', 'testing'],
+      source: 'ai',
+    });
+  });
+
+  it('sends both texts in one request, without contact details', async () => {
+    const llm = new FakeLlmClient(true, () => ({
+      resumeSkills: [],
+      jobSkills: [],
+    }));
+    await new SkillExtractionService(llm).extract(RESUME, JOB);
+
+    expect(llm.requests).toHaveLength(1);
+    const { user } = llm.requests[0];
+    expect(user).toContain('Skills: React, Node.js');
+    expect(user).toContain('birim test');
+    expect(user).not.toContain('jane@example.com');
+    expect(user).not.toContain('1234 5678');
+  });
+
+  it('removes duplicate skills from the AI result', async () => {
+    const llm = new FakeLlmClient(true, () => ({
+      resumeSkills: ['react', 'react'],
+      jobSkills: ['docker'],
+    }));
+    const result = await new SkillExtractionService(llm).extract(RESUME, JOB);
+    expect(result.resumeSkills).toEqual(['react']);
+  });
+
+  describe('falls back to the rule engine', () => {
+    const fallback = {
+      resumeSkills: ['react', 'node'],
+      jobSkills: ['react', 'docker'],
+      source: 'rules',
+    };
+
+    it('when the AI call fails (quota, network, timeout)', async () => {
+      const llm = new FakeLlmClient(true, () => {
+        throw new Error('429 quota exceeded');
+      });
+      await expect(
+        new SkillExtractionService(llm).extract(RESUME, JOB),
+      ).resolves.toEqual(fallback);
+    });
+
+    it('when the AI returns a skill that is not in the skill list', async () => {
+      const llm = new FakeLlmClient(true, () => ({
+        resumeSkills: ['react', 'cobol'],
+        jobSkills: ['docker'],
+      }));
+      await expect(
+        new SkillExtractionService(llm).extract(RESUME, JOB),
+      ).resolves.toEqual(fallback);
+    });
+
+    it('when the AI returns the wrong shape', async () => {
+      const llm = new FakeLlmClient(true, () => ({ skills: ['react'] }));
+      await expect(
+        new SkillExtractionService(llm).extract(RESUME, JOB),
+      ).resolves.toEqual(fallback);
+    });
+
+    it('when the resume is too long to send', async () => {
+      const llm = new FakeLlmClient(true, () => ({
+        resumeSkills: ['react'],
+        jobSkills: ['react'],
+      }));
+      const longResume = `${RESUME} ${'x'.repeat(30_001)}`;
+      const result = await new SkillExtractionService(llm).extract(
+        longResume,
+        JOB,
+      );
+      expect(result.source).toBe('rules');
+      expect(llm.requests).toHaveLength(0);
+    });
+  });
+});

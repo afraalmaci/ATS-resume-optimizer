@@ -2,7 +2,10 @@ import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
 import { App } from 'supertest/types';
+import { ConfigModule } from '@nestjs/config';
 import { AnalysisModule } from './analysis.module';
+import { LLM_CLIENT } from './ai/llm-client';
+import { disabledLlmClient } from './ai/__tests__/fake-llm-client';
 import { AnalysisResponse } from './dto/analysis-response.dto';
 import { makePdf } from '../../test/fixtures/make-pdf';
 
@@ -13,8 +16,12 @@ describe('POST /analysis', () => {
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [AnalysisModule],
-    }).compile();
+      // No .env and a disabled AI client: tests never use a real API key.
+      imports: [ConfigModule.forRoot({ ignoreEnvFile: true }), AnalysisModule],
+    })
+      .overrideProvider(LLM_CLIENT)
+      .useValue(disabledLlmClient())
+      .compile();
     app = moduleRef.createNestApplication();
     await app.init();
   });
@@ -40,6 +47,7 @@ describe('POST /analysis', () => {
       resumeSkills: ['react', 'node', 'aws'],
       jobSkills: ['react', 'node', 'docker'],
       missingSkills: ['docker'],
+      source: 'rules',
     });
     expect(matches).toHaveLength(3);
   });

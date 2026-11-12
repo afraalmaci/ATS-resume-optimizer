@@ -1,3 +1,4 @@
+import { SkillSource } from '../ai/skill-extraction.service';
 import { SkillMatch } from '../engine/ats-scorer';
 
 /** Response body of POST /analysis. Mirrored in frontend/src/types/analysis.ts. */
@@ -8,4 +9,6 @@ export interface AnalysisResponse {
   jobSkills: string[];
   missingSkills: string[];
   matches: SkillMatch[];
+  /** Whether the skills were found by the AI model or the rule engine. */
+  source: SkillSource;
 }

@@ -11,12 +11,14 @@ import {
   MAX_RESUME_BYTES,
 } from './analysis.constants';
 import { AnalysisResponse } from './dto/analysis-response.dto';
+import { SkillExtractionService } from './ai/skill-extraction.service';
 import { calculateATSScore } from './engine/ats-scorer';
-import { extractSkills } from './engine/skill-extractor';
 
 @Injectable()
 export class AnalysisService {
   private readonly logger = new Logger(AnalysisService.name);
+
+  constructor(private readonly skillExtraction: SkillExtractionService) {}
 
   async analyze(
     file: Express.Multer.File | undefined,
@@ -26,18 +28,19 @@ export class AnalysisService {
     const job = this.validateJobDescription(jobDescription);
     const resumeText = await this.readPdfText(file.buffer);
 
-    const resumeSkills = extractSkills(resumeText);
-    const jobSkills = extractSkills(job);
+    // AI when configured, rule engine otherwise; scoring is always rule-based.
+    const { resumeSkills, jobSkills, source } =
+      await this.skillExtraction.extract(resumeText, job);
     const { score, missingSkills, matches } = calculateATSScore(
       jobSkills,
       resumeSkills,
     );
 
     this.logger.debug(
-      `Analyzed resume: ${resumeSkills.length} resume skills, ${jobSkills.length} job skills, score ${score}`,
+      `Analyzed resume (${source}): ${resumeSkills.length} resume skills, ${jobSkills.length} job skills, score ${score}`,
     );
 
-    return { score, resumeSkills, jobSkills, missingSkills, matches };
+    return { score, resumeSkills, jobSkills, missingSkills, matches, source };
   }
 
   private validateResume(
