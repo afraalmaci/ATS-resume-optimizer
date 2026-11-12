@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { vi } from 'vitest';
 import JobDescriptionForm from '../JobDescriptionForm';
 
-const textarea = () => screen.getByPlaceholderText('Enter job description here...');
+const textarea = () => screen.getByPlaceholderText('Paste the job ad here...');
 
 describe('JobDescriptionForm', () => {
   it('allows up to 10,000 characters by default', () => {

@@ -1,21 +1,70 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* "Measuring instrument": dark panels, monospace labels, condensed display
+   type for numbers, and a few signal colours. */
+@theme inline {
+  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
+  --font-display: var(--font-plex-condensed), "Arial Narrow", sans-serif;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Colours */
+  --color-panel: #16181a;
+  --color-panel-raised: #1e2124;
+  --color-rule: #383d42;
+  --color-dim: #8a9197;
+  --color-ink: #e7e3d9;
+  --color-amber: #ffb43a;
+  --color-ok: #8fd694;
+  --color-red: #ff5a3c;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-panel);
+  color: var(--color-ink);
+}
+
+/* Faint measuring grid behind the panel. */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Hatched fill for partial matches on the coverage bar. */
+.bg-hatch {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--color-amber) 0 2px,
+    transparent 2px 6px
+  );
+}
+
+@keyframes scan {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(400%);
+  }
+}
+
+.animate-scan {
+  animation: scan 1.2s linear infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.animate-blink {
+  animation: blink 1s steps(2, start) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-scan,
+  .animate-blink {
+    animation: none;
+  }
 }

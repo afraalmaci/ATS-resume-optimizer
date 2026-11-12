@@ -2,6 +2,11 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import ResumeUpload from '../ResumeUpload';
 
+// pdf.js needs a real browser canvas; not drawn in these tests.
+vi.mock('@/lib/pdf-render', () => ({
+  renderPdfPages: vi.fn().mockResolvedValue(1),
+}));
+
 const pdf = new File(['%PDF-1.4'], 'my-cv.pdf', { type: 'application/pdf' });
 
 describe('ResumeUpload', () => {
@@ -44,5 +49,13 @@ describe('ResumeUpload', () => {
     selectFile(file);
     await new Promise((r) => setTimeout(r, 700));
     expect(onUpload).not.toHaveBeenCalledWith(file);
+  });
+
+  it('opens a preview of the selected PDF', async () => {
+    render(<ResumeUpload file={pdf} onUpload={() => {}} />);
+    fireEvent.click(screen.getByRole('button', { name: 'view' }));
+    expect(
+      await screen.findByRole('dialog', { name: /my-cv\.pdf/i }),
+    ).toBeInTheDocument();
   });
 });

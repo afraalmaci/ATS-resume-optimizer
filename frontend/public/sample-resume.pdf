@@ -1,0 +1,32 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 1048 >>
+stream
+BT /F1 11 Tf 15 TL 56 760 Td (ALEX MORGAN - Frontend Developer) Tj T* (\(Fictional sample resume for the ATS Resume Optimizer demo\)) Tj T* () Tj T* (PROFILE) Tj T* (Frontend developer with 4 years of experience building web applications) Tj T* (for e-commerce and internal tools teams.) Tj T* () Tj T* (SKILLS) Tj T* (JavaScript, TypeScript, React, Next.js, Tailwind CSS, HTML, CSS) Tj T* (Jest, Git, REST APIs, Agile / Scrum) Tj T* () Tj T* (EXPERIENCE) Tj T* (Frontend Developer - Sample Retail Co. \(2022 - present\)) Tj T* (- Rebuilt the product catalogue in Next.js and React, cutting page load time by 40%) Tj T* (- Wrote unit tests with Jest for the checkout flow) Tj T* (- Worked with the backend team on REST APIs in two-week Scrum sprints) Tj T* () Tj T* (Junior Web Developer - Example Agency \(2020 - 2022\)) Tj T* (- Built marketing sites with HTML, CSS and JavaScript) Tj T* (- Introduced Git branching and code review for a team of five) Tj T* () Tj T* (EDUCATION) Tj T* (BSc Computer Science - Example University \(2020\)) Tj T* ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000001341 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1411
+%%EOF
