@@ -1,23 +1,11 @@
-export const SKILL_SYNONYMS: Record<string, string> = {
-  'react.js': 'react',
-  reactjs: 'react',
+import { SKILL_TAXONOMY } from './skills';
 
-  'next.js': 'nextjs',
-
-  'node.js': 'node',
-  nodejs: 'node',
-
-  js: 'javascript',
-  javascript: 'javascript',
-
-  ts: 'typescript',
-  typescript: 'typescript',
-
-  mongo: 'mongodb',
-  'mongo db': 'mongodb',
-
-  'aws cloud': 'aws',
-};
+/** Alias -> skill id, built from the aliases in SKILL_TAXONOMY. */
+export const SKILL_SYNONYMS: Record<string, string> = Object.fromEntries(
+  SKILL_TAXONOMY.flatMap((skill) =>
+    (skill.aliases ?? []).map((alias) => [alias, skill.id]),
+  ),
+);
 
 export function normalizeSkill(skill: string): string {
   const cleaned = skill.toLowerCase().trim();

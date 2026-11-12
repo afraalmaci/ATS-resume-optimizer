@@ -1,5 +1,5 @@
 // engine/skill-extractor.ts
-import { SKILLS } from './skills';
+import { SKILLS, SKILL_ID_TERMS } from './skills';
 import { cleanText } from './text-utils';
 import { SKILL_SYNONYMS } from './skill-normalizer';
 
@@ -15,25 +15,43 @@ function escapeRegExp(value: string): string {
 function termPattern(term: string): RegExp {
   return new RegExp(
     `(?<![\\p{L}\\p{N}])(?<![\\p{L}\\p{N}]\\.)${escapeRegExp(term)}(?![\\p{L}\\p{N}])(?!\\.[\\p{L}\\p{N}])`,
-    'u',
+    'gu',
   );
+}
+
+interface Hit {
+  skill: string;
+  start: number;
+  end: number;
 }
 
 export function extractSkills(text: string): string[] {
   const cleaned = cleanText(text); // lowercase + trim + normalize whitespace
-  const terms = [...SKILLS, ...Object.keys(SKILL_SYNONYMS)];
-  const firstIndex = new Map<string, number>();
+  const terms = [...SKILL_ID_TERMS, ...Object.keys(SKILL_SYNONYMS)];
+  const hits: Hit[] = [];
 
   for (const term of terms) {
-    const normalized = SKILL_SYNONYMS[term] ?? term;
-    if (!SKILLS.includes(normalized)) continue;
+    const skill = SKILL_SYNONYMS[term] ?? term;
+    if (!SKILLS.includes(skill)) continue;
 
-    const match = termPattern(term).exec(cleaned);
-    if (!match) continue;
+    for (const match of cleaned.matchAll(termPattern(term))) {
+      hits.push({ skill, start: match.index, end: match.index + term.length });
+    }
+  }
 
-    const seen = firstIndex.get(normalized);
-    if (seen === undefined || match.index < seen) {
-      firstIndex.set(normalized, match.index);
+  // Longest phrase wins where matches overlap, so "react native" counts as
+  // react-native only, not also as react.
+  hits.sort((a, b) => b.end - b.start - (a.end - a.start) || a.start - b.start);
+  const taken: Hit[] = [];
+  const firstIndex = new Map<string, number>();
+
+  for (const hit of hits) {
+    if (taken.some((t) => hit.start < t.end && t.start < hit.end)) continue;
+    taken.push(hit);
+
+    const seen = firstIndex.get(hit.skill);
+    if (seen === undefined || hit.start < seen) {
+      firstIndex.set(hit.skill, hit.start);
     }
   }
 

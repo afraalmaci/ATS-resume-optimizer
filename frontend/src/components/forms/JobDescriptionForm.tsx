@@ -1,5 +1,7 @@
 "use client";
 
+import { JOB_DESCRIPTION_MAX_CHARS } from "@/schemas/formSchema";
+
 interface JobDescriptionFormProps {
   value: string;
   onChange: (text: string) => void;
@@ -9,10 +11,11 @@ interface JobDescriptionFormProps {
 export default function JobDescriptionForm({
   value,
   onChange,
-  maxChars = 500,
+  maxChars = JOB_DESCRIPTION_MAX_CHARS,
 }: JobDescriptionFormProps) {
+  // Cut over-long input (e.g. a long paste) to the limit instead of dropping it.
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    if (e.target.value.length <= maxChars) onChange(e.target.value);
+    onChange(e.target.value.slice(0, maxChars));
   };
 
   return (

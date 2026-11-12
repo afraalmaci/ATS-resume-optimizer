@@ -51,6 +51,61 @@ describe('extractSkills', () => {
     });
   });
 
+  describe('expanded skill list', () => {
+    it('finds Java, Spring Boot, Python and Django', () => {
+      expect(
+        extractSkills('Java and Spring Boot, plus Python (Django)'),
+      ).toEqual(['java', 'spring-boot', 'python', 'django']);
+    });
+
+    it('finds skills with symbols in their names', () => {
+      expect(extractSkills('C#, .NET Core and C++')).toEqual([
+        'csharp',
+        'dotnet',
+        'cpp',
+      ]);
+    });
+
+    it('maps aliases such as k8s and golang', () => {
+      expect(extractSkills('Kubernetes (k8s) and Golang')).toEqual([
+        'kubernetes',
+        'go',
+      ]);
+    });
+  });
+
+  describe('overlapping phrases', () => {
+    it('counts "React Native" only as react-native', () => {
+      expect(extractSkills('React Native developer')).toEqual(['react-native']);
+    });
+
+    it('still finds React when it also appears on its own', () => {
+      expect(extractSkills('React Native and React')).toEqual([
+        'react-native',
+        'react',
+      ]);
+    });
+
+    it('counts "GitLab CI/CD" only as gitlab-ci', () => {
+      expect(extractSkills('Pipelines in GitLab CI/CD')).toEqual(['gitlab-ci']);
+    });
+  });
+
+  describe('common words that are also skill names', () => {
+    it('does not read the word "rest" as REST', () => {
+      expect(extractSkills('the rest of the team')).not.toContain('rest');
+    });
+
+    it('finds REST from "REST API" and "RESTful"', () => {
+      expect(extractSkills('REST API')).toEqual(['rest']);
+      expect(extractSkills('RESTful services')).toEqual(['rest']);
+    });
+
+    it('does not read the word "go" as Go', () => {
+      expect(extractSkills('Ready to go to market')).not.toContain('go');
+    });
+  });
+
   describe('no false positives', () => {
     it('does not read the "js" in "node.js" as javascript', () => {
       expect(extractSkills('Node.js')).not.toContain('javascript');
