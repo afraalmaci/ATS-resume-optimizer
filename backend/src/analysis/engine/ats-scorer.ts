@@ -1,6 +1,11 @@
 import { matchSkill } from './skill-matcher';
 
 export function calculateATSScore(jobSkills: string[], resumeSkills: string[]) {
+  // Nothing to match against; avoid dividing by zero.
+  if (jobSkills.length === 0) {
+    return { score: 0, missingSkills: [], matches: [] };
+  }
+
   let totalScore = 0;
   const missingSkills: string[] = [];
   const matches: any[] = [];
