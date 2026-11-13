@@ -1,0 +1,14 @@
+Test Automation Engineer - Amsterdam
+
+Wat ga je doen?
+Je bouwt en onderhoudt onze testautomatisering voor de webapplicatie. Je schrijft end-to-end tests met Cypress en Playwright en zorgt dat ze draaien in onze pipeline voor continue integratie.
+
+Wat vragen wij?
+- Minimaal 2 jaar ervaring met het schrijven van geautomatiseerde tests
+- Goede kennis van JavaScript of TypeScript
+- Ervaring met unittesten en het testen van REST API's
+- Je werkt graag agile, in een team dat in sprints werkt
+- Kennis van versiebeheer met Git
+
+Pré
+Ervaring met Docker en GitHub Actions.

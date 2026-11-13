@@ -1,46 +1,36 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import { useDropzone, FileRejection } from "react-dropzone";
-import { toast } from "react-hot-toast";
 import { RESUME_MAX_BYTES } from "@/schemas/formSchema";
 
-// initialFile restores the selection when the step is shown again.
-export function useResumeUpload(initialFile: File | null = null) {
-  const [file, setFile] = useState<File | null>(initialFile);
-  const [loading, setLoading] = useState(false);
+interface Options {
+  onSelect: (file: File) => void;
+  onError: (message: string) => void;
+}
 
-  const onDrop = useCallback((acceptedFiles: File[], fileRejections: FileRejection[]) => {
-    if (fileRejections.length > 0) {
-      toast.error("Only PDF files are allowed!");
-      return;
-    }
+/** Drag-and-drop or click-to-select for one PDF, with type and size checks. */
+export function useResumeUpload({ onSelect, onError }: Options) {
+  const onDrop = useCallback(
+    (acceptedFiles: File[], fileRejections: FileRejection[]) => {
+      if (fileRejections.length > 0 || acceptedFiles.length === 0) {
+        onError("Only PDF files are allowed");
+        return;
+      }
 
-    const selectedFile = acceptedFiles[0];
+      const selected = acceptedFiles[0];
+      if (selected.size > RESUME_MAX_BYTES) {
+        onError("File size must be 5 MB or less");
+        return;
+      }
+      onSelect(selected);
+    },
+    [onSelect, onError],
+  );
 
-    if (selectedFile.size > RESUME_MAX_BYTES) {
-      toast.error("File size must be 5 MB or less");
-      return;
-    }
-
-    setLoading(true);
-    setTimeout(() => {
-      setFile(selectedFile);
-      setLoading(false);
-      toast.success("PDF selected!");
-    }, 500);
-  }, []);
-
-  const removeFile = useCallback(() => {
-    setFile(null);
-    toast("File removed");
-  }, []);
-
-  const dropzoneProps = useDropzone({
+  return useDropzone({
     onDrop,
     accept: { "application/pdf": [".pdf"] },
     maxFiles: 1,
   });
-
-  return { file, loading, removeFile, ...dropzoneProps };
 }

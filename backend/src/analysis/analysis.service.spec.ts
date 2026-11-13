@@ -5,11 +5,18 @@ import {
 } from '@nestjs/common';
 import { AnalysisService } from './analysis.service';
 import { makePdf, makeUpload } from '../../test/fixtures/make-pdf';
+import { SkillExtractionService } from './ai/skill-extraction.service';
+import {
+  FakeLlmClient,
+  disabledLlmClient,
+} from './ai/__tests__/fake-llm-client';
 
 const JOB = 'We are hiring a developer with React, Node.js and Docker.';
 
 describe('AnalysisService', () => {
-  const service = new AnalysisService();
+  const service = new AnalysisService(
+    new SkillExtractionService(disabledLlmClient()),
+  );
   const resume = () => makeUpload(makePdf('Skills: React, Node.js, AWS'));
 
   it('analyzes a PDF resume against a job description', async () => {
@@ -20,6 +27,39 @@ describe('AnalysisService', () => {
     expect(result.missingSkills).toEqual(['docker']);
     expect(result.score).toBe(67);
     expect(result.matches).toHaveLength(3);
+    expect(result.source).toBe('rules');
+  });
+
+  it('includes the display name and category of every skill it returns', async () => {
+    const result = await service.analyze(resume(), JOB);
+
+    expect(Object.keys(result.skills).sort()).toEqual([
+      'aws',
+      'docker',
+      'node',
+      'react',
+    ]);
+    expect(result.skills.node).toEqual({
+      label: 'Node.js',
+      category: 'backend',
+    });
+    expect(result.skills.aws).toEqual({ label: 'AWS', category: 'cloud' });
+  });
+
+  it('scores the AI skills plus the rule-engine skills when the AI is configured', async () => {
+    const llm = new FakeLlmClient(true, () => ({
+      resumeSkills: ['react', 'testing'],
+      jobSkills: ['react', 'testing'],
+    }));
+    const aiService = new AnalysisService(new SkillExtractionService(llm));
+
+    const result = await aiService.analyze(resume(), JOB);
+
+    expect(result.source).toBe('ai');
+    // Job: react, testing (AI) + node, docker (rules).
+    // Resume: react, testing (AI) + node, aws (rules). Docker is missing.
+    expect(result.jobSkills).toEqual(['react', 'testing', 'node', 'docker']);
+    expect(result.score).toBe(75);
   });
 
   describe('resume file', () => {

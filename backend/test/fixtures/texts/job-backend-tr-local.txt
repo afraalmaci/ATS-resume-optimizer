@@ -1,0 +1,15 @@
+Backend Yazılım Geliştirici (Java)
+
+Neler yapacaksın?
+Ödeme altyapımızın arka uç servislerini Java ve Spring Boot ile geliştireceksin. Servislerimiz PostgreSQL veritabanı üzerinde çalışıyor ve konteyner olarak bulutta (AWS) yayında.
+
+Aradığımız nitelikler
+- Java ile en az 3 yıl deneyim
+- İlişkisel veritabanları ve SQL sorguları konusunda bilgi
+- Birim test yazma alışkanlığı (JUnit)
+- Sürekli entegrasyon ve sürekli dağıtım süreçlerine hakimiyet
+- Sürüm kontrol sistemi olarak Git kullanmış olmak
+- Çevik yazılım geliştirme yöntemleriyle çalışmış olmak
+
+Artı olarak
+Docker ve Kubernetes deneyimi.
