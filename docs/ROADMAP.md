@@ -45,15 +45,46 @@ Decisions:
 - **Multilingual input (EN/NL/TR): no translation service.** CVs are personal data, translation can mangle technical names ("Spring Boot", "Go"), and most skill names are English in every language anyway. Instead, the taxonomy gets Dutch and Turkish aliases for local-language terms ("birim test", "testautomatisering", "sürekli entegrasyon"), and full multilingual understanding comes from the LLM in Phase 2.
 - **Repeated mentions:** a skill counts once however often a job ad mentions it. Importance is weighted in Phase 3 by job-ad section, not by frequency.
 
-## Phase 2: LLM integration (the "AI automation" core)
+## Phase 2: LLM integration (the "AI automation" core) (done, one item left)
 - `LlmClient` interface behind a Nest provider, so the vendor is swappable and mockable
 - Structured output validated with a zod schema; invalid output is rejected, not trusted
 - Hybrid design: LLM extracts skills/requirements, deterministic code scores them
 - Fallback to the Phase 1 engine on timeout, error or invalid output
-- Timeouts, retries with backoff, `@nestjs/throttler`, input truncation, cache by content hash
+- Timeouts, `@nestjs/throttler`, cache by content hash (no retries, see decisions)
 - Prompts versioned in files
 - Small eval set: fixtures with expected skills, compare rule-based vs LLM precision/recall
-- Dutch and Turkish aliases in the taxonomy, so the fallback engine also finds local-language terms
+- Remaining: Dutch and Turkish aliases in the taxonomy, so the fallback engine also finds local-language terms
+
+Delivered beyond the plan:
+- Contact details (email, phone, links) removed before text is sent to Gemini
+- Model output limited to the taxonomy's skill ids by the JSON schema, which also contains prompt injection hidden in a resume
+- Daily AI budget for the whole server, on top of the per-IP rate limit
+- Response includes skill labels and categories; frontend rebuilt as a single page with sample resume and job ad, an in-page PDF preview (pdf.js) and a notice about Gemini
+- Dependency audit: fixed a critical `proxy-addr` advisory (backend) and critical Next.js RCE advisories (Next 16.1.6 -> 16.4.3)
+
+Eval results (`npm run eval:extraction`, 2026-11-13, 5 job ads + 1 resume, average over job ads):
+
+| | Precision | Recall |
+|---|---|---|
+| Rule engine | 100% | 87% |
+| Gemini Flash-Lite alone | 98% | 97% |
+| Combined (used by the app) | 98% | 100% |
+
+The rule engine was tuned on these same texts, so its numbers are optimistic. Gemini's gain is in
+the two ads that name skills in Turkish or Dutch (recall 69% -> 100% and 82% -> 100%). The one
+wrong skill was Scrum, inferred from "works in sprints". Small sample and the model is not fully
+deterministic: read these as direction, not exact figures.
+
+Decisions:
+- **Google Gemini free tier, no paid provider.** Personal project with few users; the free tier is
+  enough. Free-tier data may be used by Google, so the UI says so, contact details are removed,
+  and the samples let people try it without their own resume.
+- **Flash-Lite, not Flash.** On the free tier `gemini-flash-latest` answered 503 (overloaded) or
+  504 (too slow) on all eval calls; `gemini-flash-lite-latest` replied in about 1-6 s. Configurable
+  with `GEMINI_MODEL`.
+- **AI plus rules, not AI alone.** The model finds local-language terms the rules miss, but now and
+  then skips a plainly named skill ("SQL", "GitHub Actions") that the rules never miss.
+- **No retries.** A failed call goes to the rule engine instead of spending more quota and time.
 
 ## Phase 3: Job-fit analysis
 - Must-have vs nice-to-have weighting by job-ad section ("Requirements" / "Aranan nitelikler" / "Wat vragen wij" vs "Nice to have" / "Tercih sebebi" / "Pré")
