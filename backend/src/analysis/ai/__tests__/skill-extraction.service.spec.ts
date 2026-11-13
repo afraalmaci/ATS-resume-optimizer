@@ -15,7 +15,7 @@ describe('SkillExtractionService', () => {
 
     expect(result).toEqual({
       resumeSkills: ['react', 'node'],
-      jobSkills: ['react', 'docker'],
+      jobSkills: ['react', 'docker', 'testing'], // "birim test" is in the rules too
       source: 'rules',
     });
     expect(llm.requests).toHaveLength(0);
@@ -91,7 +91,7 @@ describe('SkillExtractionService', () => {
   describe('falls back to the rule engine', () => {
     const fallback = {
       resumeSkills: ['react', 'node'],
-      jobSkills: ['react', 'docker'],
+      jobSkills: ['react', 'docker', 'testing'], // "birim test" is in the rules too
       source: 'rules',
     };
 

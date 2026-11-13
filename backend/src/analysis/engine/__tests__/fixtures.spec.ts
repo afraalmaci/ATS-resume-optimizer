@@ -8,13 +8,9 @@ import {
 const sorted = (skills: string[]) => [...skills].sort();
 
 describe('skill extraction on realistic texts', () => {
-  it.each(TEXT_FIXTURES)('$file', ({ file, expected, localSkills = [] }) => {
-    // The rule engine finds every expected skill except those the text only
-    // names in Turkish or Dutch (the AI model's job, measured in test/eval).
-    const expectedByRules = expected.filter((s) => !localSkills.includes(s));
-    expect(sorted(extractSkills(readFixture(file)))).toEqual(
-      sorted(expectedByRules),
-    );
+  it.each(TEXT_FIXTURES)('$file', ({ file, expected }) => {
+    // Including skills the text only names in Turkish or Dutch.
+    expect(sorted(extractSkills(readFixture(file)))).toEqual(sorted(expected));
   });
 });
 
