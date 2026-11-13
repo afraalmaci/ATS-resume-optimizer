@@ -1,5 +1,8 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {};
+const nextConfig: NextConfig = {
+  // A self-contained server bundle for the Docker image (frontend/Dockerfile).
+  output: "standalone",
+};
 
 export default nextConfig;

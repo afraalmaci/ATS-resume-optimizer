@@ -1,0 +1,45 @@
+# Production stack for ATS/OPT on the Hetzner server, next to basketwise.
+# Step-by-step guide: docs/DEPLOY.md
+#
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+# No ports are published: only Caddy (from the basketwise stack) reaches the
+# containers, over the separate "ats_proxy" network. The ATS containers are
+# not on basketwise's network, so they cannot reach its database.
+#
+# "ats_proxy" is created once by hand (docker network create ats_proxy) and is
+# external here, so "docker compose down" never removes it: basketwise's Caddy
+# is attached to it and would otherwise fail to start.
+name: ats
+
+services:
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    # GEMINI_API_KEY and friends. Lives only on the server, never in git.
+    env_file: ./backend/.env.production
+    environment:
+      PORT: "3001"
+      # One proxy (Caddy) in front: use the client IP it reports.
+      TRUST_PROXY: "1"
+    mem_limit: 512m
+    networks:
+      proxy:
+        aliases: [ats-backend]
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_URL: /api
+    restart: unless-stopped
+    depends_on: [backend]
+    mem_limit: 384m
+    networks:
+      proxy:
+        aliases: [ats-frontend]
+
+networks:
+  proxy:
+    external: true
+    name: ats_proxy
