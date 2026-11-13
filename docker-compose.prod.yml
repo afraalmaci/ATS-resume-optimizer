@@ -10,10 +10,14 @@
 # "ats_proxy" is created once by hand (docker network create ats_proxy) and is
 # external here, so "docker compose down" never removes it: basketwise's Caddy
 # is attached to it and would otherwise fail to start.
+#
+# Service names are DNS names on every network a service joins, so they must
+# not clash with names basketwise's Caddy uses on its own network ("frontend",
+# "backend"). Plain names here made Caddy send basketwise traffic to ATS.
 name: ats
 
 services:
-  backend:
+  ats-backend:
     build: ./backend
     restart: unless-stopped
     # GEMINI_API_KEY and friends. Lives only on the server, never in git.
@@ -23,21 +27,17 @@ services:
       # One proxy (Caddy) in front: use the client IP it reports.
       TRUST_PROXY: "1"
     mem_limit: 512m
-    networks:
-      proxy:
-        aliases: [ats-backend]
+    networks: [proxy]
 
-  frontend:
+  ats-frontend:
     build:
       context: ./frontend
       args:
         NEXT_PUBLIC_API_URL: /api
     restart: unless-stopped
-    depends_on: [backend]
+    depends_on: [ats-backend]
     mem_limit: 384m
-    networks:
-      proxy:
-        aliases: [ats-frontend]
+    networks: [proxy]
 
 networks:
   proxy:
