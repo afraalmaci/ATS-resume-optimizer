@@ -46,7 +46,7 @@ describe('AnalysisService', () => {
     expect(result.skills.aws).toEqual({ label: 'AWS', category: 'cloud' });
   });
 
-  it('scores the skills the AI found when the AI is configured', async () => {
+  it('scores the AI skills plus the rule-engine skills when the AI is configured', async () => {
     const llm = new FakeLlmClient(true, () => ({
       resumeSkills: ['react', 'testing'],
       jobSkills: ['react', 'testing'],
@@ -56,7 +56,10 @@ describe('AnalysisService', () => {
     const result = await aiService.analyze(resume(), JOB);
 
     expect(result.source).toBe('ai');
-    expect(result.score).toBe(100);
+    // Job: react, testing (AI) + node, docker (rules).
+    // Resume: react, testing (AI) + node, aws (rules). Docker is missing.
+    expect(result.jobSkills).toEqual(['react', 'testing', 'node', 'docker']);
+    expect(result.score).toBe(75);
   });
 
   describe('resume file', () => {

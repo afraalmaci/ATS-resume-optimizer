@@ -67,7 +67,7 @@ describe('GeminiClient', () => {
     const call = generateContent.mock.calls[0] as [
       { model: string; config: { httpOptions: { timeout: number } } },
     ];
-    expect(call[0].model).toBe('gemini-flash-latest');
+    expect(call[0].model).toBe('gemini-flash-lite-latest');
     expect(call[0].config.httpOptions.timeout).toBe(8000);
   });
 

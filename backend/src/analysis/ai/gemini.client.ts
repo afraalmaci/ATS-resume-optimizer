@@ -3,9 +3,12 @@ import { ConfigService } from '@nestjs/config';
 import { GoogleGenAI } from '@google/genai';
 import { LlmClient, LlmJsonRequest } from './llm-client';
 
-// An alias that follows Google's current Flash model, so a retired model
-// version does not break the app. Override with GEMINI_MODEL.
-const DEFAULT_MODEL = 'gemini-flash-latest';
+// An alias that follows Google's current Flash-Lite model, so a retired
+// model version does not break the app. Override with GEMINI_MODEL.
+// Flash-Lite, not Flash: on the free tier the full Flash model often answered
+// 503 (overloaded) or 504 (too slow) in our eval, while Flash-Lite replied in
+// 1-6 s with good results (see test/eval/eval-extraction.ts).
+const DEFAULT_MODEL = 'gemini-flash-lite-latest';
 const DEFAULT_TIMEOUT_MS = 15_000;
 
 /**

@@ -35,6 +35,34 @@ describe('SkillExtractionService', () => {
     });
   });
 
+  it('adds skills the rule engine found and the AI missed', async () => {
+    // The AI missed Node.js (resume) and Docker (job); the rules find both.
+    const llm = new FakeLlmClient(true, () => ({
+      resumeSkills: ['react'],
+      jobSkills: ['react', 'testing'],
+    }));
+    const result = await new SkillExtractionService(llm).extract(RESUME, JOB);
+
+    expect(result).toEqual({
+      resumeSkills: ['react', 'node'],
+      jobSkills: ['react', 'testing', 'docker'],
+      source: 'ai',
+    });
+  });
+
+  it('can return the AI result alone, for measuring it', async () => {
+    const llm = new FakeLlmClient(true, () => ({
+      resumeSkills: ['react'],
+      jobSkills: ['react', 'testing'],
+    }));
+    await expect(
+      new SkillExtractionService(llm).extractWithAiOnly(RESUME, JOB),
+    ).resolves.toEqual({
+      resumeSkills: ['react'],
+      jobSkills: ['react', 'testing'],
+    });
+  });
+
   it('sends both texts in one request, without contact details', async () => {
     const llm = new FakeLlmClient(true, () => ({
       resumeSkills: [],
@@ -56,7 +84,8 @@ describe('SkillExtractionService', () => {
       jobSkills: ['docker'],
     }));
     const result = await new SkillExtractionService(llm).extract(RESUME, JOB);
-    expect(result.resumeSkills).toEqual(['react']);
+    // React once; Node.js comes from the rule engine.
+    expect(result.resumeSkills).toEqual(['react', 'node']);
   });
 
   describe('falls back to the rule engine', () => {
