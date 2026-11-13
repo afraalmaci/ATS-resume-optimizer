@@ -1,6 +1,6 @@
 // engine/skill-extractor.ts
 import { SKILLS, SKILL_EXACT_CASE_TERMS, SKILL_ID_TERMS } from './skills';
-import { normalizeWhitespace } from './text-utils';
+import { normalizeWhitespace, toMatchCase } from './text-utils';
 import { SKILL_SYNONYMS } from './skill-normalizer';
 
 function escapeRegExp(value: string): string {
@@ -27,7 +27,7 @@ interface Hit {
 
 export function extractSkills(text: string): string[] {
   const original = normalizeWhitespace(text);
-  const cleaned = original.toLowerCase();
+  const cleaned = toMatchCase(original);
   const hits: Hit[] = [];
 
   const addHits = (haystack: string, term: string, skill: string) => {

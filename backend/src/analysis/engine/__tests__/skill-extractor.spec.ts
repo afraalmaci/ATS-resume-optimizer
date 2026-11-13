@@ -122,6 +122,42 @@ describe('extractSkills', () => {
     });
   });
 
+  describe('Turkish and Dutch skill terms', () => {
+    it('finds Turkish terms for testing, CI, CD and agile', () => {
+      expect(
+        extractSkills(
+          'Birim test yazma alışkanlığı, sürekli entegrasyon ve sürekli dağıtım, çevik yöntemler',
+        ),
+      ).toEqual(['testing', 'ci', 'cd', 'agile']);
+    });
+
+    it('finds Dutch terms for testing, CI and CD', () => {
+      expect(
+        extractSkills(
+          'Testautomatisering, unittesten, continue integratie en continue levering',
+        ),
+      ).toEqual(['testing', 'ci', 'cd']);
+    });
+
+    it('finds Turkish terms written in capitals, including the dotted İ', () => {
+      expect(extractSkills('SÜREKLİ ENTEGRASYON VE BİRİM TESTLERİ')).toEqual([
+        'ci',
+        'testing',
+      ]);
+    });
+
+    it('finds terms whose accented letters come from a PDF as two characters', () => {
+      // "ü" as "u" + combining diaeresis, as some PDFs produce it.
+      expect(extractSkills('su\u0308rekli entegrasyon')).toEqual(['ci']);
+    });
+
+    it('does not read general words like "test" or "entegrasyon" alone as skills', () => {
+      expect(
+        extractSkills('Bir test yapılacak. Sistem entegrasyonu ve dağıtım.'),
+      ).toEqual([]);
+    });
+  });
+
   describe('no false positives', () => {
     it('does not read the "js" in "node.js" as javascript', () => {
       expect(extractSkills('Node.js')).not.toContain('javascript');

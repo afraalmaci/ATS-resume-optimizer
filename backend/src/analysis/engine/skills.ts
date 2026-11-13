@@ -272,13 +272,24 @@ export const SKILL_TAXONOMY: readonly SkillDefinition[] = [
     id: 'ci',
     label: 'CI',
     category: 'devops',
-    aliases: ['continuous integration'],
+    aliases: [
+      'continuous integration',
+      'sürekli entegrasyon', // Turkish
+      'continue integratie', // Dutch
+    ],
   },
   {
     id: 'cd',
     label: 'CD',
     category: 'devops',
-    aliases: ['continuous delivery', 'continuous deployment'],
+    aliases: [
+      'continuous delivery',
+      'continuous deployment',
+      'sürekli dağıtım', // Turkish
+      'sürekli teslimat',
+      'continue levering', // Dutch
+      'continue deployment',
+    ],
   },
   {
     id: 'github-actions',
@@ -300,7 +311,26 @@ export const SKILL_TAXONOMY: readonly SkillDefinition[] = [
   { id: 'git', label: 'Git', category: 'devops' },
 
   // Testing
-  { id: 'testing', label: 'Testing', category: 'testing' },
+  {
+    id: 'testing',
+    label: 'Testing',
+    category: 'testing',
+    // Not plain "test": too common ("a test", "test environment").
+    aliases: [
+      'unit test',
+      'unit tests',
+      'unittests', // Dutch, also written as one word
+      'unittesten',
+      'automated tests',
+      'test automation',
+      'birim test', // Turkish, with common suffixed forms
+      'birim testi',
+      'birim testleri',
+      'test otomasyonu',
+      'testautomatisering', // Dutch
+      'geautomatiseerde tests',
+    ],
+  },
   { id: 'jest', label: 'Jest', category: 'testing', implies: ['testing'] },
   {
     id: 'cypress',
@@ -329,7 +359,12 @@ export const SKILL_TAXONOMY: readonly SkillDefinition[] = [
   },
 
   // Practices
-  { id: 'agile', label: 'Agile', category: 'practice' },
+  {
+    id: 'agile',
+    label: 'Agile',
+    category: 'practice',
+    aliases: ['çevik'], // Turkish
+  },
   { id: 'scrum', label: 'Scrum', category: 'practice', implies: ['agile'] },
 ];
 

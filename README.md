@@ -23,7 +23,8 @@ your resume covers, which are missing, and an ATS-style match score.
    - **Google Gemini** (Flash-Lite, free tier) reads both texts in one request and picks skills
      from the list, including ones written in Turkish or Dutch ("birim test", "continue integratie").
      Email addresses, phone numbers and links are removed before sending; nothing is stored.
-   - The **rule engine** matches skill names and aliases (`React.js`, `k8s`, `Mongo DB`) with
+   - The **rule engine** matches skill names and aliases (`React.js`, `k8s`, `Mongo DB`, and common
+     Turkish and Dutch terms such as "sürekli entegrasyon" or "testautomatisering") with
      word-boundary-aware patterns. Its results are added to Gemini's, because the model now and
      then skips a plainly named skill.
    - Without `GEMINI_API_KEY`, or when Gemini fails, times out, or the daily AI limit is reached,
