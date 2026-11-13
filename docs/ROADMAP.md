@@ -45,7 +45,7 @@ Decisions:
 - **Multilingual input (EN/NL/TR): no translation service.** CVs are personal data, translation can mangle technical names ("Spring Boot", "Go"), and most skill names are English in every language anyway. Instead, the taxonomy gets Dutch and Turkish aliases for local-language terms ("birim test", "testautomatisering", "sürekli entegrasyon"), and full multilingual understanding comes from the LLM in Phase 2.
 - **Repeated mentions:** a skill counts once however often a job ad mentions it. Importance is weighted in Phase 3 by job-ad section, not by frequency.
 
-## Phase 2: LLM integration (the "AI automation" core) (done, one item left)
+## Phase 2: LLM integration (the "AI automation" core) (done)
 - `LlmClient` interface behind a Nest provider, so the vendor is swappable and mockable
 - Structured output validated with a zod schema; invalid output is rejected, not trusted
 - Hybrid design: LLM extracts skills/requirements, deterministic code scores them
@@ -53,7 +53,7 @@ Decisions:
 - Timeouts, `@nestjs/throttler`, cache by content hash (no retries, see decisions)
 - Prompts versioned in files
 - Small eval set: fixtures with expected skills, compare rule-based vs LLM precision/recall
-- Remaining: Dutch and Turkish aliases in the taxonomy, so the fallback engine also finds local-language terms
+- Dutch and Turkish aliases in the taxonomy, so the fallback engine also finds local-language terms ("birim test", "sürekli entegrasyon", "çevik", "testautomatisering", "continue integratie"); matching also handles the Turkish capital "İ" and accented letters that PDFs split in two
 
 Delivered beyond the plan:
 - Contact details (email, phone, links) removed before text is sent to Gemini
@@ -70,7 +70,9 @@ Eval results (`npm run eval:extraction`, 2026-11-13, 5 job ads + 1 resume, avera
 | Gemini Flash-Lite alone | 98% | 97% |
 | Combined (used by the app) | 98% | 100% |
 
-The rule engine was tuned on these same texts, so its numbers are optimistic. Gemini's gain is in
+Measured before the Dutch and Turkish aliases were added; with them, the rule engine also finds
+every expected skill in the two local-language ads. The rule engine was tuned on these same texts,
+so its numbers are optimistic. Gemini's gain is in
 the two ads that name skills in Turkish or Dutch (recall 69% -> 100% and 82% -> 100%). The one
 wrong skill was Scrum, inferred from "works in sprints". Small sample and the model is not fully
 deterministic: read these as direction, not exact figures.
