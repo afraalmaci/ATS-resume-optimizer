@@ -159,7 +159,7 @@ function Report({ result }: { result: AnalysisResponse }) {
       <p className="mt-auto border-t border-rule pt-3 text-xs uppercase tracking-[0.2em] text-dim">
         Read by{" "}
         {result.source === "ai"
-          ? "Google Gemini"
+          ? "Google Gemini + the rule engine"
           : "the rule engine (AI unavailable)"}
       </p>
     </div>
