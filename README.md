@@ -3,6 +3,9 @@
 Upload a resume (PDF) and paste a job description to see which of the job's skills
 your resume covers, which are missing, and an ATS-style match score.
 
+**Live demo:** [ats.2-29-141-47.sslip.io](https://ats.2-29-141-47.sslip.io): try it with the
+built-in sample resume and job ad, no upload of your own needed.
+
 > **Status:** under active development. Skills are extracted by Google Gemini combined with a
 > rule engine, and scored by deterministic code (Phases 1 and 2). See [docs/ROADMAP.md](docs/ROADMAP.md).
 
